@@ -80,7 +80,7 @@ public class Reseaux {
 	     }
 
 	        connexion.put(maison, generateur);
-	        System.out.println("Connexion créée : " + maison.getnom() + " → " + generateur.getnom());
+	        System.out.println("Connexion créée : " + maison.getnom() + " -> " + generateur.getnom());
 	    
 
 		
@@ -104,13 +104,13 @@ public class Reseaux {
 	         * on initialise probleme a true si oui
 	         */
 	        if (count == 0) {
-	            System.out.println("⚠ La maison " + maison.getnom() + " n’est connectée à aucun générateur !");
+	            System.out.println("La maison " + maison.getnom() + " n’est connectée à aucun générateur !");
 	            probleme = true;
 	        }
 	        /*ici on verifie si y'a une maison qui a plusieurs generateurs et on initialise 
 	         * probleme a true si oui  */
 	        else if (count > 1) {
-	            System.out.println("⚠ La maison " + maison.getnom() + " est connectée à plusieurs générateurs !");
+	            System.out.println("La maison " + maison.getnom() + " est connectée à plusieurs générateurs !");
 	            probleme = true;
 	        }
 	    }
@@ -227,7 +227,7 @@ public class Reseaux {
 
 	    /*on met à jour la connexion*/
 	    connexion.put(maisonNouvelle, genNouvelle);
-	    System.out.println("Connexion modifiée : " + maisonNouvelle.getnom() + " → " + genNouvelle.getnom());
+	    System.out.println("Connexion modifiée : " + maisonNouvelle.getnom() + " -> " + genNouvelle.getnom());
 	}
 	public static void afficherReseau() {
 		System.out.println("\n=== RÉSEAU ÉLECTRIQUE ACTUEL ===\n");
@@ -259,7 +259,7 @@ public class Reseaux {
 	        System.out.println("  Aucune connexion définie.");
 	    } else {
 	        for (Map.Entry<Maison, Generateur> entry : connexion.entrySet()) {
-	            System.out.println("  - " + entry.getKey().getnom() + " → " + entry.getValue().getnom());
+	            System.out.println("  - " + entry.getKey().getnom() + " -> " + entry.getValue().getnom());
 	        }
 	    }
 
