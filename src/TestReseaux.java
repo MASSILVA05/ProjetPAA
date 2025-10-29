@@ -1,6 +1,8 @@
 import java.util.Scanner;
 
-
+import java.util.*; // ← couvre List, Map, HashMap, ArrayList, Scanner, etc.
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 public class TestReseaux {
 	private static Scanner sc = new Scanner(System.in);
 
@@ -15,7 +17,16 @@ public class TestReseaux {
             System.out.println("4) Terminer et vérifier le réseau");
             System.out.print("Choix : ");
             
-            int choix = sc.nextInt();
+            /*int choix = sc.nextInt();*/
+            int choix = -1;
+            try {
+                choix = sc.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Erreur : veuillez entrer un nombre entier !");
+                sc.nextLine(); // vide le buffer
+                continue;
+            }
+
             /* Ici on appelle les methodes selon le choix de l'utilisateur*/
             switch (choix) {
                 case 1 -> Reseaux.ajoutergenerateur();
@@ -44,7 +55,15 @@ public class TestReseaux {
             System.out.println("4) Fin");
             System.out.print("Choix : ");
             
-            int choix = sc.nextInt();
+            //int choix = sc.nextInt();
+            int choix = -1;
+            try {
+                choix = sc.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Erreur : veuillez entrer un nombre entier !");
+                sc.nextLine(); // vide le buffer
+                continue;
+            }
 
             switch (choix) {
                 case 1 -> {

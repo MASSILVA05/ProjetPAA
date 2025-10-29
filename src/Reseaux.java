@@ -21,8 +21,20 @@ public class Reseaux {
 		
 		System.out.println("Donner le nom du generateur et sa capacité");
 		String nom=sc.next();
-		int cap=sc.nextInt();
-		 for (Generateur gen : G) {
+		//int cap=sc.nextInt();
+		int cap;
+		try {
+		    cap = sc.nextInt();
+		    if (cap <= 0) throw new IllegalArgumentException("La capacité doit être positive !");
+		} catch (InputMismatchException e) {
+		    System.out.println("Erreur : la capacité doit être un entier !");
+		    sc.nextLine();
+		    return;
+		} catch (IllegalArgumentException e) {
+		    System.out.println(e.getMessage());
+		    return;
+		}
+		for (Generateur gen : G) {
 	            if (gen.getnom().equals(nom)) {
 	                System.out.println(" Générateur déjà existant. Capacité mise à jour !");
 	                gen.setCap(cap);
@@ -34,55 +46,79 @@ public class Reseaux {
 		
 	}
 	public static void ajouterMaison() {
-		
-		System.out.println("Donner le nom de la maison et sa consommation(BASSE/NORMALE/FORTE) : ");
-		String nom=sc.next();
-		String type=sc.next();
-		int cons;
-		
-		switch (type) {
-        case "BASSE": cons = 10; break;
-        case "NORMALE": cons = 20; break;
-        case "FORTE": cons = 40; break;
-        default:
-            System.out.println("Type inconnu. Choisissez entre BASSE, NORMALE ou FORTE.");
-            return;
-		}
-		 for (Maison mai : M) {
+	    try {
+	        System.out.println("Donner le nom de la maison et sa consommation (BASSE / NORMALE / FORTE) : ");
+	        String nom = sc.next();
+	        String type = sc.next();
+	        int cons;
+
+	        switch (type.toUpperCase()) {
+	            case "BASSE":
+	                cons = 10;
+	                break;
+	            case "NORMALE":
+	                cons = 20;
+	                break;
+	            case "FORTE":
+	                cons = 40;
+	                break;
+	            default:
+	                throw new IllegalArgumentException("Type inconnu. Choisissez entre BASSE, NORMALE ou FORTE.");
+	        }
+
+	        for (Maison mai : M) {
 	            if (mai.getnom().equals(nom)) {
-	                System.out.println("Générateur déjà existant. Capacité mise à jour !");
+	                System.out.println("Maison déjà existante. Consommation mise à jour !");
 	                mai.setCons(cons);
 	                return;
 	            }
-		 }
-		Maison nouvMaison=new Maison(cons,nom);
-		M.add(nouvMaison);
-		
+	        }
+
+	        Maison nouvMaison = new Maison(cons, nom);
+	        M.add(nouvMaison);
+	        System.out.println("Maison ajoutée avec succès : " + nom);
+
+	    } catch (InputMismatchException e) {
+	        System.out.println("Erreur : entrée invalide. Veuillez entrer le bon format (ex : M1 NORMALE).");
+	        sc.nextLine(); // vide le buffer du scanner
+	    } catch (IllegalArgumentException e) {
+	        System.out.println("Erreur : " + e.getMessage());
+	    }
 	}
+
+
 	public static void ajouterconnexion() {
-		 System.out.println("Donner le nom d'une maison et d'un générateur (ex: M1 G1) :");
-	     String nom1 = sc.next();
-	     String nom2 = sc.next();
-	     Maison maison = null;
-	     Generateur generateur = null;
+		try {
+			System.out.println("Donner le nom d'une maison et d'un générateur (ex: M1 G1) :");
+		    String nom1 = sc.next();
+		    String nom2 = sc.next();
+		    Maison maison = null;
+		    Generateur generateur = null;
 
-	     for (Maison m : M) {
-	            if (m.getnom().equals(nom1)) maison = m;
-	            if (m.getnom().equals(nom2)) maison = (maison == null ? m : maison);
-	     }
-	     for (Generateur g : G) {
-	            if (g.getnom().equals(nom1)) generateur = g;
+		    for (Maison m : M) {
+		           if (m.getnom().equals(nom1)) maison = m;
+		           if (m.getnom().equals(nom2)) maison = (maison == null ? m : maison);
+		    }
+		    for (Generateur g : G) {
+		           if (g.getnom().equals(nom1)) generateur = g;
 	            if (g.getnom().equals(nom2)) generateur = (generateur == null ? g : generateur);
-	     }
-	     if (maison == null || generateur == null) {
-	            System.out.println("Erreur : maison ou générateur introuvable !");
-	            return;
-	     }
+		    }
+		    if (maison == null || generateur == null) {
+		    	throw new IllegalArgumentException("Erreur : maison ou générateur introuvable !");
+            
+		    }
+		    connexion.put(maison, generateur);
+		    System.out.println("Connexion créée : " + maison.getnom() + " → " + generateur.getnom());
+		    
 
-	        connexion.put(maison, generateur);
-	        System.out.println("Connexion créée : " + maison.getnom() + " → " + generateur.getnom());
-	    
-
+			
+		}catch (IllegalArgumentException e) {
+            System.out.println("Erreur : " + e.getMessage());
+        }catch (InputMismatchException e) {
+            System.out.println("Erreur de saisie !");
+            sc.nextLine();
+        }
+		
 		
 	}
 	public static void verifierConnexions() {
@@ -184,51 +220,75 @@ public class Reseaux {
 	}
 	
 	public static void modification() {
-		System.out.println("Veuillez saisir la connexion à modifier (ex: M1 G1) :");
-	    String nom1 = sc.next();
-	    String nom2 = sc.next();
+		try {
+			System.out.println("Veuillez saisir la connexion à modifier (ex: M1 G1) :");
+		    String nom1 = sc.next();
+		    String nom2 = sc.next();
 
-	    Maison maisonExistante = null;
-	    Generateur genExistante = null;
+		    Maison maisonExistante = null;
+		    Generateur genExistante = null;
 
-	    /*Identifier la maison et le générateur dans la saisie mm si les noms sont inversés*/
-	    for (Maison m : M) {
-	        if (m.getnom().equals(nom1) || m.getnom().equals(nom2)) maisonExistante = m;
-	    }
-	    for (Generateur g : G) {
-	        if (g.getnom().equals(nom1) || g.getnom().equals(nom2)) genExistante = g;
-	    }
+		    /*Identifier la maison et le générateur dans la saisie mm si les noms sont inversés*/
+		    for (Maison m : M) {
+		        if (m.getnom().equals(nom1) || m.getnom().equals(nom2)) maisonExistante = m;
+		    }
+		    for (Generateur g : G) {
+		        if (g.getnom().equals(nom1) || g.getnom().equals(nom2)) genExistante = g;
+		    }
 
-	    /* on vérifie que la connexion existe */
-	    if (maisonExistante == null || genExistante == null || !connexion.containsKey(maisonExistante) || 
-	        !connexion.get(maisonExistante).equals(genExistante)) {
-	        System.out.println("Erreur : la connexion indiquée n'existe pas !");
-	        return;
-	    }
+		    /* on vérifie que la connexion existe */
+		    if (maisonExistante == null || genExistante == null || !connexion.containsKey(maisonExistante) || 
+		        !connexion.get(maisonExistante).equals(genExistante)) {
+                throw new IllegalArgumentException("Erreur : la connexion indiquée n'existe pas !");
 
-	    System.out.println("Veuillez saisir la nouvelle connexion (ex: M1 G2) :");
-	    String nnom1 = sc.next();
-	    String nnom2 = sc.next();
+		    }
 
-	    Maison maisonNouvelle = null;
-	    Generateur genNouvelle = null;
+		    System.out.println("Veuillez saisir la nouvelle connexion (ex: M1 G2) :");
+		    String nnom1 = sc.next();
+		    String nnom2 = sc.next();
 
-	    for (Maison m : M) {
-	        if (m.getnom().equals(nnom1) || m.getnom().equals(nnom2)) maisonNouvelle = m;
-	    }
-	    for (Generateur g : G) {
-	        if (g.getnom().equals(nnom1) || g.getnom().equals(nnom2)) genNouvelle = g;
-	    }
+		    Maison maisonNouvelle = null;
+		    Generateur genNouvelle = null;
 
-	    if (maisonNouvelle == null || genNouvelle == null) {
-	        System.out.println("Erreur : la nouvelle connexion est invalide !");
-	        return;
-	    }
+		    for (Maison m : M) {
+		        if (m.getnom().equals(nnom1) || m.getnom().equals(nnom2)) maisonNouvelle = m;
+		    }
+		    for (Generateur g : G) {
+		        if (g.getnom().equals(nnom1) || g.getnom().equals(nnom2)) genNouvelle = g;
+		    }
 
-	    /*on met à jour la connexion*/
-	    connexion.put(maisonNouvelle, genNouvelle);
-	    System.out.println("Connexion modifiée : " + maisonNouvelle.getnom() + " → " + genNouvelle.getnom());
+		    if (maisonNouvelle == null || genNouvelle == null) {
+                throw new IllegalArgumentException("Erreur : la nouvelle connexion est invalide !");
+
+		    }
+
+		    /*on met à jour la connexion*/
+		    connexion.put(maisonNouvelle, genNouvelle);
+		    System.out.println("Connexion modifiée : " + maisonNouvelle.getnom() + " → " + genNouvelle.getnom());
+
+		}catch (IllegalArgumentException e) {
+            System.out.println("Erreur : " + e.getMessage());
+        } catch (InputMismatchException e) {
+            System.out.println("Erreur de saisie !");
+            sc.nextLine();
+        }
 	}
+	
+
+	
+
+	public static List<Maison> getM() {
+		return M;
+	}
+
+	
+
+	public static List<Generateur> getG() {
+		return G;
+	}
+
+	
+
 	public static void afficherReseau() {
 		System.out.println("\n=== RÉSEAU ÉLECTRIQUE ACTUEL ===\n");
 
