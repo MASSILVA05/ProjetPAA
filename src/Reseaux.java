@@ -140,13 +140,13 @@ public class Reseaux {
 	         * on initialise probleme a true si oui
 	         */
 	        if (count == 0) {
-	            System.out.println("⚠ La maison " + maison.getnom() + " n’est connectée à aucun générateur !");
+	            System.out.println("La maison " + maison.getnom() + " n’est connectée à aucun générateur !");
 	            probleme = true;
 	        }
 	        /*ici on verifie si y'a une maison qui a plusieurs generateurs et on initialise 
 	         * probleme a true si oui  */
 	        else if (count > 1) {
-	            System.out.println("⚠ La maison " + maison.getnom() + " est connectée à plusieurs générateurs !");
+	            System.out.println("La maison " + maison.getnom() + " est connectée à plusieurs générateurs !");
 	            probleme = true;
 	        }
 	    }
