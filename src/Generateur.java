@@ -1,4 +1,6 @@
-
+/*Membre du groupe : Massilva Djennadi
+ * Ines Meslem
+ * Lizaveta Dzemchankova*/
 public class Generateur {
 	private int cap;
 	private String nom;

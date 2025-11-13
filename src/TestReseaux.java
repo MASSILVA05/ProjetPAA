@@ -1,3 +1,7 @@
+/*Membre du groupe : Massilva Djennadi
+ * Ines Meslem
+ * Lizaveta Dzemchankova*/
+
 import java.util.Scanner;
 
 import java.util.*; // ← couvre List, Map, HashMap, ArrayList, Scanner, etc.

@@ -1,3 +1,9 @@
+
+/*Membre du groupe : Massilva Djennadi
+ * Ines Meslem
+ * Lizaveta Dzemchankova*/
+
+
 import java.util.Scanner ;
  
 import java.util.List;
