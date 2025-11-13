@@ -172,8 +172,11 @@ public class Reseaux {
 		return u;
 	}
 	public static double Disp(Reseaux S) {
-		if (G.isEmpty()) 
-			return 0;
+		if (G.isEmpty()|| connexion.isEmpty()) {
+	        System.out.println("Aucune connexion active — dispersion = 0");
+	        return 0;
+		}
+			
 		double uMoyenne = 0;
 	    Map<Generateur, Double> taux = new HashMap<>();/*key c'est le generateur et value c'est son taux d'uti*/
 	    for (Generateur g : G) {
@@ -212,6 +215,11 @@ public class Reseaux {
 	
 	
 	public static double calculercout(Reseaux S) {
+		if (connexion.isEmpty()) {
+	        System.out.println("Aucune connexion existante. Le coût ne peut pas être calculé !");
+	        return 0;
+	    }
+
 		double dispersion=Disp(S);
 		double Surcharge=surcharge(S);
 		System.out.println("La somme des écarts de chaque générateur par rapport à la moyenne est : "+dispersion+"\n");
@@ -325,8 +333,48 @@ public class Reseaux {
 
 	    System.out.println("\n=== FIN DU RÉSEAU ===\n");
 	}
-	
+	public static void supprimerConnexion() {
+	    try {
+	        System.out.println("Donner le nom d'une maison et d'un générateur à déconnecter (ex: M1 G1) :");
+	        String nom1 = sc.next();
+	        String nom2 = sc.next();
+
+	        Maison maison = null;
+	        Generateur generateur = null;
+
+	        // Identifier la maison et le générateur (peu importe l'ordre)
+	        for (Maison m : M) {
+	            if (m.getnom().equals(nom1) || m.getnom().equals(nom2)) maison = m;
+	        }
+	        for (Generateur g : G) {
+	            if (g.getnom().equals(nom1) || g.getnom().equals(nom2)) generateur = g;
+	        }
+
+	        // Vérifier que la maison et le générateur existent
+	        if (maison == null || generateur == null) {
+	            throw new IllegalArgumentException("Erreur : maison ou générateur introuvable !");
+	        }
+
+	        // Vérifier que la connexion existe
+	        if (!connexion.containsKey(maison) || !connexion.get(maison).equals(generateur)) {
+	            throw new IllegalArgumentException("Erreur : la connexion entre " 
+	                    + maison.getnom() + " et " + generateur.getnom() + " n'existe pas !");
+	        }
+
+	        // Supprimer la connexion
+	        connexion.remove(maison);
+	        System.out.println("Connexion supprimée : " + maison.getnom() + " ✕ " + generateur.getnom());
+
+	    } catch (IllegalArgumentException e) {
+	        System.out.println("Erreur : " + e.getMessage());
+	    } catch (InputMismatchException e) {
+	        System.out.println("Erreur de saisie !");
+	        sc.nextLine();
+	    }
+	}
+
 }
+
 
 
 
