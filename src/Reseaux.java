@@ -23,6 +23,7 @@ import java.util.*;
  *	@author Lizaveta Dzemchankova
  */
 public class Reseaux {
+	private static double  lambda=10;
 	/**
      * Scanner utilisé pour la saisie utilisateur.
      */
@@ -231,12 +232,14 @@ public class Reseaux {
 
 	public static double tauxutilisation(Generateur g) {
 		double lg=0;
-		double cg=0;
+		double cg = g.getcap();
+	    if(cg == 0) 
+	    	return 0; 
 		double u=0;
 		for (Map.Entry<Maison, Generateur> entry:connexion.entrySet()){
 			if(entry.getValue().equals(g)) {
 				lg=lg+entry.getKey().getcons();
-				cg=entry.getValue().getcap();
+				
 			}
 			
 		}
@@ -284,8 +287,8 @@ public class Reseaux {
 	public static double surcharge(Reseaux S) {
 		double surcharge = 0;
 		for (Generateur g : G) {
-	        int lg = 0;
-	        int cg = g.getcap();
+	        double lg = 0;
+	        double cg = g.getcap();
 
 	        /*je calcule lg comme j'ai deja fait dans le calcul du taux */
 	        for (Map.Entry<Maison, Generateur> entry : connexion.entrySet()) {
@@ -295,7 +298,7 @@ public class Reseaux {
 	        }
 
 	        /* Ajouter à la surcharge uniquement si le générateur est dépassé*/
-	        surcharge += Math.max(0, (double)(lg - cg) / cg);
+	        surcharge += Math.max(0, (lg - cg) / cg);
 	    }
 
 	    return surcharge;
@@ -318,7 +321,7 @@ public class Reseaux {
 		double Surcharge=surcharge(S);
 		System.out.println("La somme des écarts de chaque générateur par rapport à la moyenne est : "+dispersion+"\n");
 		System.out.println("La penalisation des Surcharge est : "+Surcharge+"\n");
-		return dispersion+10*Surcharge;
+		return dispersion+lambda*Surcharge;
 	}
 	/**
      * Modifie une connexion existante entre une maison et un générateur.
