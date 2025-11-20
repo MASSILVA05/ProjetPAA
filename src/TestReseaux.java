@@ -126,11 +126,16 @@ public class TestReseaux {
             case 1 :{
                 double cout = Reseaux.calculercout(null);
                 System.out.println("Coût total du réseau : " + cout);
+                break;
             }
             case 2 : Reseaux.modification();
+            break;
             case 3 : Reseaux.afficherReseau();
+            break;
             case 4 : Reseaux.supprimerConnexion();
+            break;
             case 5 : quitterMenu = true;
+            break;
             default : System.out.println("Option invalide !");
             }
         }
