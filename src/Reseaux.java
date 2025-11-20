@@ -1,28 +1,70 @@
 
-/*Membre du groupe : Massilva Djennadi
- * Ines Meslem
- * Lizaveta Dzemchankova*/
-
 
 import java.util.Scanner ;
  
 import java.util.List;
 import java.util.Map;
 import java.util.*;
-
+/**
+ * Classe représentant un réseau électrique composé de générateurs et de maisons.
+ * <p>
+ * Cette classe permet de :
+ * <ul>
+ *     <li>Ajouter des générateurs et des maisons</li>
+ *     <li>Créer, modifier et supprimer des connexions entre maisons et générateurs</li>
+ *     <li>Vérifier la validité des connexions</li>
+ *     <li>Calculer le coût du réseau, la dispersion et la surcharge</li>
+ *     <li>Afficher l’état actuel du réseau</li>
+ * </ul>
+ * 
+ * 
+ * @author Massilva Djennadi
+ *@author Ines Meslem
+ *	@author Lizaveta Dzemchankova
+ */
 public class Reseaux {
+	/**
+     * Scanner utilisé pour la saisie utilisateur.
+     */
+
 	private static Scanner sc=new Scanner(System.in);
+	/**
+     * Liste des maisons présentes dans le réseau.
+     */
 	private static List<Maison> M= new ArrayList<>();
-	private static List<Generateur> G= new ArrayList<>();
-	private static Map <Maison,Generateur> connexion=new HashMap<>();
+	/**
+     * Liste des générateurs présents dans le réseau.
+     */
+    private static List<Generateur> G = new ArrayList<>();
+
+    /**
+     * Map représentant les connexions entre maisons et générateurs.
+     * 
+     * Clé : Maison ; Valeur : Generateur
+     * 
+     */
+    private static Map<Maison, Generateur> connexion = new HashMap<>();
 	
-	
+    /**
+     * Constructeur pour initialiser un réseau avec des listes et des connexions existantes.
+     * 
+     * @param M la liste des maisons
+     * @param G la liste des générateurs
+     * @param connexion la map des connexions maison → générateur
+     */
 	public Reseaux (List<Maison> M, List<Generateur> G,Map <Maison,Generateur> connexion) {
 		this.M=M;
 		this.G=G;
 		this.connexion=connexion;
 	}
-	
+	/**
+     * Ajoute un générateur au réseau.
+     * 
+     * Si le générateur existe déjà, sa capacité est mise à jour.
+     * Sinon, un nouveau générateur est créé et ajouté à la liste.
+     * 
+     */
+
 	public static void ajoutergenerateur() {
 		
 		System.out.println("Donner le nom du generateur et sa capacité");
@@ -51,6 +93,14 @@ public class Reseaux {
 		G.add(nouveauGen);
 		
 	}
+	/**
+     * Ajoute une maison au réseau.
+     *
+     * Si la maison existe déjà, sa consommation est mise à jour.
+     * Sinon, une nouvelle maison est créée et ajoutée à la liste.
+     * 
+     */
+
 	public static void ajouterMaison() {
 	    try {
 	        System.out.println("Donner le nom de la maison et sa consommation (BASSE / NORMALE / FORTE) : ");
@@ -92,7 +142,12 @@ public class Reseaux {
 	    }
 	}
 
-
+	/**
+     * Crée une connexion entre une maison et un générateur.
+     * 
+     * Si la maison ou le générateur n’existe pas, affiche une erreur.
+     *
+     */
 	public static void ajouterconnexion() {
 		try {
 			System.out.println("Donner le nom d'une maison et d'un générateur (ex: M1 G1) :");
@@ -127,6 +182,12 @@ public class Reseaux {
 		
 		
 	}
+	/**
+     * Vérifie que chaque maison est connectée exactement à un générateur.
+     * 
+     * Affiche les problèmes éventuels (maison non connectée ou connectée à plusieurs générateurs)
+     * 
+     */
 	public static void verifierConnexions() {
 	    boolean probleme = false;
 
@@ -161,8 +222,13 @@ public class Reseaux {
 	        System.out.println("Toutes les maisons sont correctement connectées !");
 	    }
 	}
-	/*on va calculer le taux d'utilisation d'un generateur pour ensuite 
-	 * calculer le cout d'un reseau */
+	/**
+     * Calcule le taux d’utilisation d’un générateur.
+     * 
+     * @param g le générateur
+     * @return le taux d’utilisation (consommation totale des maisons connectées / capacité du générateur)
+     */
+
 	public static double tauxutilisation(Generateur g) {
 		double lg=0;
 		double cg=0;
@@ -177,6 +243,13 @@ public class Reseaux {
 		u=lg/cg;
 		return u;
 	}
+	/**
+     * Calcule la dispersion du réseau (écart entre l’utilisation de chaque générateur et la moyenne).
+     * 
+     * @param S le réseau
+     * @return la dispersion totale
+     */
+
 	public static double Disp(Reseaux S) {
 		if (G.isEmpty()|| connexion.isEmpty()) {
 	        System.out.println("Aucune connexion active — dispersion = 0");
@@ -199,6 +272,15 @@ public class Reseaux {
 
 	    return dispersion;
 	}
+	  /**
+     * Calcule la surcharge du réseau.
+     * 
+     * La surcharge est la somme des excédents de consommation par rapport à la capacité des générateurs.
+     * 
+     * 
+     * @param S le réseau
+     * @return la surcharge totale
+     */
 	public static double surcharge(Reseaux S) {
 		double surcharge = 0;
 		for (Generateur g : G) {
@@ -219,7 +301,13 @@ public class Reseaux {
 	    return surcharge;
 	}
 	
-	
+	/**
+     * Calcule le coût total du réseau en combinant dispersion et surcharge.
+     * 
+     * @param S le réseau
+     * @return le coût total
+     */
+
 	public static double calculercout(Reseaux S) {
 		if (connexion.isEmpty()) {
 	        System.out.println("Aucune connexion existante. Le coût ne peut pas être calculé !");
@@ -232,7 +320,12 @@ public class Reseaux {
 		System.out.println("La penalisation des Surcharge est : "+Surcharge+"\n");
 		return dispersion+10*Surcharge;
 	}
-	
+	/**
+     * Modifie une connexion existante entre une maison et un générateur.
+     * 
+     * L’utilisateur saisit la connexion à modifier puis la nouvelle connexion.
+     * 
+     */
 	public static void modification() {
 		try {
 			System.out.println("Veuillez saisir la connexion à modifier (ex: M1 G1) :");
@@ -289,19 +382,31 @@ public class Reseaux {
 	}
 	
 
-	
+
+    /**
+     * Retourne la liste des maisons du réseau.
+     * 
+     * @return liste des maisons
+     */
+
 
 	public static List<Maison> getM() {
 		return M;
 	}
-
+	/**
+     * Retourne la liste des générateurs du réseau.
+     * 
+     * @return liste des générateurs
+     */
 	
 
 	public static List<Generateur> getG() {
 		return G;
 	}
 
-	
+	/**
+     * Affiche l’état actuel du réseau : générateurs, maisons et connexions.
+     */
 
 	public static void afficherReseau() {
 		System.out.println("\n=== RÉSEAU ÉLECTRIQUE ACTUEL ===\n");
@@ -339,6 +444,12 @@ public class Reseaux {
 
 	    System.out.println("\n=== FIN DU RÉSEAU ===\n");
 	}
+	/**
+     * Supprime une connexion existante entre une maison et un générateur.
+     * 
+     * Vérifie que la maison et le générateur existent et que la connexion est valide.
+     * 
+     */
 	public static void supprimerConnexion() {
 	    try {
 	        System.out.println("Donner le nom d'une maison et d'un générateur à déconnecter (ex: M1 G1) :");
@@ -380,9 +491,6 @@ public class Reseaux {
 	}
 
 }
-
-
-
 
 
 

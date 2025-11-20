@@ -1,15 +1,46 @@
-/*Membre du groupe : Massilva Djennadi
- * Ines Meslem
- * Lizaveta Dzemchankova*/
 
 import java.util.Scanner;
 
 import java.util.*; // ← couvre List, Map, HashMap, ArrayList, Scanner, etc.
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
-public class TestReseaux {
-	private static Scanner sc = new Scanner(System.in);
+/**
+ * Classe principale pour gérer un réseau électrique.
+ * 
+ * Cette classe permet à l'utilisateur de :
+ * <ul>
+ *     <li>Ajouter des générateurs</li>
+ *     <li>Ajouter des maisons</li>
+ *     <li>Ajouter ou supprimer des connexions</li>
+ *     <li>Vérifier le réseau et calculer le coût</li>
+ * </ul>
+ * Elle contient deux menus : le menu principal et le menu réseau.
+ * 
+ * @author Massilva Djennadi
+ * @author Ines Meslem
+ * @author Lizaveta Dzemchankova
+ */
 
+public class TestReseaux {
+	/**
+     * Scanner utilisé pour lire les entrées utilisateur.
+     */
+	private static Scanner sc = new Scanner(System.in);
+	/**
+	 * Constructeur par défaut de la classe TestReseaux.
+	 * Initialise le scanner et prépare le programme pour exécuter le menu.
+	 */
+	public TestReseaux() {
+	    // Aucun champ à initialiser ici, le scanner est statique
+	}
+	/**
+     * Point d'entrée du programme.
+     * <p>
+     * Affiche le menu principal et exécute les actions selon le choix de l'utilisateur.
+     * </p>
+     * 
+     * @param args arguments de la ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         boolean quitter = false;
         /*Le premier menu:*/
@@ -23,7 +54,6 @@ public class TestReseaux {
             System.out.println("5) Terminer et vérifier le réseau");
             System.out.print("Choix : ");
             
-            /*int choix = sc.nextInt();*/
             int choix = -1;
             try {
                 choix = sc.nextInt();
@@ -33,7 +63,7 @@ public class TestReseaux {
                 continue;
             }
 
-            /* Ici on appelle les methodes selon le choix de l'utilisateur*/
+            /* Appel des méthodes selon le choix */
             switch (choix) {
                 case 1 -> Reseaux.ajoutergenerateur();
                 case 2 -> Reseaux.ajouterMaison();
@@ -54,6 +84,19 @@ public class TestReseaux {
 
         System.out.println("Programme terminé.");
     }
+    /**
+     * Affiche le menu réseau et exécute les actions liées au réseau.
+     *
+     * Permet à l'utilisateur de :
+     * <ul>
+     *     <li>Calculer le coût du réseau</li>
+     *     <li>Modifier une connexion</li>
+     *     <li>Afficher le réseau</li>
+     *     <li>Supprimer une connexion</li>
+     *     <li>Quitter le menu</li>
+     * </ul>
+     * 
+     */
 
     private static void menuReseau() {
         boolean quitterMenu = false;
