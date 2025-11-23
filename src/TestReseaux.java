@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 import java.util.*; // ← couvre List, Map, HashMap, ArrayList, Scanner, etc.
 import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
+
 /**
  * Classe principale pour gérer un réseau électrique.
  * 
@@ -110,6 +110,8 @@ public class TestReseaux {
             System.out.println("4) supprimer une connexion");
 
             System.out.println("5) Fin");
+            System.out.println("6) Sauvegarde cellule test");
+
             System.out.print("Choix : ");
             
             //int choix = sc.nextInt();
@@ -136,6 +138,19 @@ public class TestReseaux {
             break;
             case 5 : quitterMenu = true;
             break;
+            case 6:
+
+                System.out.println("Veuillez saisir le nom du fichier de sauvegarde (ex: fichier.txt) :");
+                try {
+                    String nomFichier = sc.next();
+                    
+                    SauvegardeReseau.sauvegarder(nomFichier, Reseaux.getG(), Reseaux.getM(), Reseaux.getConnexions());
+                        
+                } catch (Exception e) {
+                    System.out.println("Erreur de saisie.");
+                    sc.nextLine(); 
+                }
+                break;
             default : System.out.println("Option invalide !");
             }
         }

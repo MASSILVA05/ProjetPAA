@@ -1,9 +1,5 @@
 
 
-import java.util.Scanner ;
- 
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 /**
  * Classe représentant un réseau électrique composé de générateurs et de maisons.
@@ -37,23 +33,24 @@ public class Reseaux {
      * Liste des générateurs présents dans le réseau.
      */
     private static List<Generateur> G = new ArrayList<>();
-
     /**
      * Map représentant les connexions entre maisons et générateurs.
      * 
-     * Clé : Maison ; Valeur : Generateur
+     * Clé : Generateur  ; Valeur : Liste des maisons branchées dessus
      * 
-     */
-    private static Map<Maison, Generateur> connexion = new HashMap<>();
+	**/
+ 
+	private static Map<Generateur, List<Maison>> connexion = new HashMap<>();
+
 	
     /**
      * Constructeur pour initialiser un réseau avec des listes et des connexions existantes.
      * 
      * @param M la liste des maisons
      * @param G la liste des générateurs
-     * @param connexion la map des connexions maison → générateur
+     * @param connexion la map des connexions générateur  → liste des maisons
      */
-	public Reseaux (List<Maison> M, List<Generateur> G,Map <Maison,Generateur> connexion) {
+	public Reseaux (List<Maison> M, List<Generateur> G,Map <Generateur,List<Maison>> connexion) {
 		this.M=M;
 		this.G=G;
 		this.connexion=connexion;
@@ -91,6 +88,7 @@ public class Reseaux {
 	            }
 		 }
 		Generateur nouveauGen=new Generateur(cap,nom);
+		connexion.put(nouveauGen, new ArrayList<>());
 		G.add(nouveauGen);
 		
 	}
@@ -169,7 +167,7 @@ public class Reseaux {
 		    	throw new IllegalArgumentException("Erreur : maison ou générateur introuvable !");
             
 		    }
-		    connexion.put(maison, generateur);
+		    connexion.get(generateur).add(maison);
 		    System.out.println("Connexion créée : " + maison.getnom() + " → " + generateur.getnom());
 		    
 
@@ -198,10 +196,9 @@ public class Reseaux {
 	        /*on fait a loop qui compte how many times a specific house (maison) 
 	         * appears as a key (i.e., is connected to a generator) 
 	         * in the connexion map.*/
-	        for (Map.Entry<Maison, Generateur> entry : connexion.entrySet()) {
-	        	/* For each entry (a key–value pair) inside the map called connexion, do something */
-	            if (entry.getKey().equals(maison)) {
-	                count++;
+	        for (List<Maison> maisonsDuGen : connexion.values()) {
+            	if (maisonsDuGen.contains(maison)) {
+                	count++;
 	            }
 	        }
 	        /* ici on verifie si y'a une maison qui n'a pas de generateur et on renvoie une erreur
@@ -235,17 +232,15 @@ public class Reseaux {
 		double cg = g.getcap();
 	    if(cg == 0) 
 	    	return 0; 
-		double u=0;
-		for (Map.Entry<Maison, Generateur> entry:connexion.entrySet()){
-			if(entry.getValue().equals(g)) {
-				lg=lg+entry.getKey().getcons();
-				
-			}
-			
-		}
-		u=lg/cg;
-		return u;
+		if (connexion.containsKey(g)) {
+        	List<Maison> maisonsDuGen = connexion.get(g);
+        	for (Maison m : maisonsDuGen) {
+            	lg += m.getcons(); // On somme la consommation
+        }
+    }
+    return lg / cg;
 	}
+
 	/**
      * Calcule la dispersion du réseau (écart entre l’utilisation de chaque générateur et la moyenne).
      * 
@@ -286,20 +281,21 @@ public class Reseaux {
      */
 	public static double surcharge(Reseaux S) {
 		double surcharge = 0;
-		for (Generateur g : G) {
-	        double lg = 0;
-	        double cg = g.getcap();
+	for (Map.Entry<Generateur, List<Maison>> entry : connexion.entrySet()) {
+        Generateur g = entry.getKey();
+        List<Maison> maisonsConnectees = entry.getValue();
 
-	        /*je calcule lg comme j'ai deja fait dans le calcul du taux */
-	        for (Map.Entry<Maison, Generateur> entry : connexion.entrySet()) {
-	            if (entry.getValue().equals(g)) {
-	                lg += entry.getKey().getcons();
-	            }
-	        }
+        double lg = 0;
+        double cg = g.getcap();
 
-	        /* Ajouter à la surcharge uniquement si le générateur est dépassé*/
-	        surcharge += Math.max(0, (lg - cg) / cg);
-	    }
+        // On calcule la charge de ce générateur
+        for (Maison m : maisonsConnectees) {
+            lg += m.getcons();
+        }
+
+        // On ajoute la surcharge si nécessaire
+        surcharge += Math.max(0, (lg - cg) / cg);
+    }
 
 	    return surcharge;
 	}
@@ -336,45 +332,48 @@ public class Reseaux {
 		    String nom2 = sc.next();
 
 		    Maison maisonExistante = null;
-		    Generateur genExistante = null;
+		    Generateur genAncien = null;
 
 		    /*Identifier la maison et le générateur dans la saisie mm si les noms sont inversés*/
 		    for (Maison m : M) {
 		        if (m.getnom().equals(nom1) || m.getnom().equals(nom2)) maisonExistante = m;
 		    }
 		    for (Generateur g : G) {
-		        if (g.getnom().equals(nom1) || g.getnom().equals(nom2)) genExistante = g;
+		        if (g.getnom().equals(nom1) || g.getnom().equals(nom2)) genAncien = g;
 		    }
 
 		    /* on vérifie que la connexion existe */
-		    if (maisonExistante == null || genExistante == null || !connexion.containsKey(maisonExistante) || 
-		        !connexion.get(maisonExistante).equals(genExistante)) {
-                throw new IllegalArgumentException("Erreur : la connexion indiquée n'existe pas !");
-
-		    }
+			if (maisonExistante == null || genAncien == null || 
+            	!connexion.containsKey(genAncien) || 
+            	!connexion.get(genAncien).contains(maisonExistante)) {
+            	throw new IllegalArgumentException("Erreur : la connexion indiquée n'existe pas !");
+        	}
 
 		    System.out.println("Veuillez saisir la nouvelle connexion (ex: M1 G2) :");
 		    String nnom1 = sc.next();
 		    String nnom2 = sc.next();
 
 		    Maison maisonNouvelle = null;
-		    Generateur genNouvelle = null;
+		    Generateur genNouveau = null;
 
 		    for (Maison m : M) {
 		        if (m.getnom().equals(nnom1) || m.getnom().equals(nnom2)) maisonNouvelle = m;
 		    }
 		    for (Generateur g : G) {
-		        if (g.getnom().equals(nnom1) || g.getnom().equals(nnom2)) genNouvelle = g;
+		        if (g.getnom().equals(nnom1) || g.getnom().equals(nnom2)) genNouveau = g;
 		    }
 
-		    if (maisonNouvelle == null || genNouvelle == null) {
+		    if (maisonNouvelle == null || genNouveau == null) {
                 throw new IllegalArgumentException("Erreur : la nouvelle connexion est invalide !");
 
 		    }
 
 		    /*on met à jour la connexion*/
-		    connexion.put(maisonNouvelle, genNouvelle);
-		    System.out.println("Connexion modifiée : " + maisonNouvelle.getnom() + " → " + genNouvelle.getnom());
+		    connexion.get(genAncien).remove(maisonExistante);
+			// On prépare le nouveau générateur (s'il n'est pas encore dans la map)
+        	connexion.putIfAbsent(genNouveau, new ArrayList<>());
+			connexion.get(genNouveau).add(maisonExistante);
+		    System.out.println("Connexion modifiée : " + maisonNouvelle.getnom() + " → " + genNouveau.getnom());
 
 		}catch (IllegalArgumentException e) {
             System.out.println("Erreur : " + e.getMessage());
@@ -385,6 +384,10 @@ public class Reseaux {
 	}
 	
 
+
+	public static Map<Generateur, List<Maison>> getConnexions() {
+    	return connexion; 
+}
 
     /**
      * Retourne la liste des maisons du réseau.
@@ -440,11 +443,18 @@ public class Reseaux {
 	    if (connexion.isEmpty()) {
 	        System.out.println("  Aucune connexion définie.");
 	    } else {
-	        for (Map.Entry<Maison, Generateur> entry : connexion.entrySet()) {
-	            System.out.println("  - " + entry.getKey().getnom() + " -> " + entry.getValue().getnom());
-	        }
-	    }
-
+	  	for (Map.Entry<Generateur, List<Maison>> entry : connexion.entrySet()) {
+            Generateur g = entry.getKey();
+            List<Maison> listeMaisons = entry.getValue();
+            
+            // Si le générateur a des maisons, on les affiche
+            if (!listeMaisons.isEmpty()) {
+                for (Maison m : listeMaisons) {
+                    System.out.println("  - " + g.getnom() + " <-> " + m.getnom());
+                }
+            }
+        }
+    }
 	    System.out.println("\n=== FIN DU RÉSEAU ===\n");
 	}
 	/**
@@ -476,13 +486,13 @@ public class Reseaux {
 	        }
 
 	        // Vérifier que la connexion existe
-	        if (!connexion.containsKey(maison) || !connexion.get(maison).equals(generateur)) {
+	        if (!connexion.containsKey(generateur) || !connexion.get(generateur).contains(maison)) {
 	            throw new IllegalArgumentException("Erreur : la connexion entre " 
 	                    + maison.getnom() + " et " + generateur.getnom() + " n'existe pas !");
 	        }
 
 	        // Supprimer la connexion
-	        connexion.remove(maison);
+	        connexion.get(generateur).remove(maison);
 	        System.out.println("Connexion supprimée : " + maison.getnom() + " ✕ " + generateur.getnom());
 
 	    } catch (IllegalArgumentException e) {
