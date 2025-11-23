@@ -1,3 +1,4 @@
+package partie1;
 
 
 import java.util.Scanner ;
@@ -504,12 +505,11 @@ public class Reseaux {
 	    if (!M.contains(m) || !G.contains(g)) {
 	        throw new IllegalArgumentException("Maison ou générateur non existant");
 	    }
-	    connexion.put(m, g);
+	    connexion.replace(m, g);
 	}
 	public static void setLambda(double l) {
 	    lambda = l;
 	}
-
 }
 
 
