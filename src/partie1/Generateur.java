@@ -1,4 +1,4 @@
-
+package partie1;
 
 /**
  * Classe représentant un générateur électrique.

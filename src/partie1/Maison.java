@@ -1,3 +1,4 @@
+package partie1;
 /**
  * Classe représentant une maison dans le réseau électrique.
  * <p>
