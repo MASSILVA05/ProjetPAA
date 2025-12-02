@@ -185,6 +185,16 @@ public class FichierLoader {
             }
         }
 
-        return new Reseaux(maisons, generateurs, connexions);
+        Map<Generateur, List<Maison>> connexionsReseau = new HashMap<Generateur, List<Maison>>();
+        for (Map.Entry<Maison, Generateur> entry : connexions.entrySet()) {
+            Generateur g = entry.getValue();
+            Maison m = entry.getKey();
+            if (!connexionsReseau.containsKey(g)) {
+                connexionsReseau.put(g, new ArrayList<Maison>());
+            }
+            connexionsReseau.get(g).add(m);
+        }
+
+        return new Reseaux(maisons, generateurs, connexionsReseau);
     }
 }
