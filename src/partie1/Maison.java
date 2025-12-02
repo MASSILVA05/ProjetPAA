@@ -1,3 +1,4 @@
+package partie1;
 /**
  * Classe représentant une maison dans le réseau électrique.
  * <p>
@@ -96,7 +97,9 @@ public class Maison {
 	    this.cons = type.getValeur();
 	}
 	/**
-     * Retourne une représentation textuelle de la maiso* @return chaîne de la forme "Nom (consommation kW)"
+     * Retourne une représentation textuelle de la maison.
+     *
+     * @return chaîne de la forme "Nom (consommation kW)"
      */
     @Override
     public String toString() {
@@ -104,3 +107,4 @@ public class Maison {
     }
 	
 
+}
