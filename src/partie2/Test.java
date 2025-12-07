@@ -1,15 +1,11 @@
 package partie2;
 import partie1.Reseaux;
-import partie2.FichierLoader;
-import partie2.Automatisation;
 import java.util.*;
 
 
 
-import partie2.FichierLoader;
-import partie2.Automatisation;
 
-import java.util.*;
+
 
 /**
  * Classe principale pour gérer un réseau électrique.
@@ -155,17 +151,11 @@ public class Test {
             return;
         }
 
-        int k = -1;
-        while (k <= 0) {
-            System.out.print("Nombre de tentatives pour l'automatisation (entier > 0) : ");
-            k = lireEntier();
-            if (k <= 0) {
-                System.out.println("Erreur : veuillez entrer un entier positif.");
-            }
-        }
+       
 
         // Automatisation sans coût cible, optimisation maximale
-        Automatisation auto = new Automatisation(reseau, k);
+        Automatisation auto = new Automatisation(reseau);
+        System.out.println("   → " + auto.getK() + " itérations prévues\n");
         auto.resoudre();
 
         // Mettre à jour le réseau après automatisation

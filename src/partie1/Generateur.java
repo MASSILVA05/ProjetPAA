@@ -77,5 +77,5 @@ public class Generateur {
     public String toString() {
         return nom + " (" + cap + " kW)";
     }
-
+    
 }
