@@ -72,7 +72,7 @@ public class Automatisation {
     
     private Generateur trouverGenerateurDeMaison(Maison m) {
         for (Generateur g : reseau.getG()) {
-            List<Maison> maisons = Reseaux.getConnexions().get(g);
+            List<Maison> maisons = reseau.getConnexions().get(g);
             if (maisons != null && maisons.contains(m)) {
                 return g;
             }

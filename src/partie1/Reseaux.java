@@ -45,7 +45,7 @@ public class Reseaux {
      * Clé : Maison ; Valeur : Generateur
      * 
      */
-	private static Map<Generateur, List<Maison>> connexion = new HashMap<>();
+	private Map<Generateur, List<Maison>> connexion = new HashMap<>();
 	
     /**
      * Constructeur pour initialiser un réseau avec des listes et des connexions existantes.
@@ -398,7 +398,7 @@ public class Reseaux {
             sc.nextLine();
         }
 	}
-	public static Map<Generateur, List<Maison>> getConnexions() {
+	public  Map<Generateur, List<Maison>> getConnexions() {
     	return connexion; 
 
 	}

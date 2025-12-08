@@ -1,6 +1,8 @@
 package partie2;
 import  partie1.Generateur;
 import  partie1.Maison;
+import partie1.Reseaux;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,17 +20,17 @@ public class SauvegardeReseau {
      * @param maisons     La liste complète des maisons (M).
      * @param connexions  La map des connexions (Generateur -> Liste de Maisons).
      */
-    public static void sauvegarder(String nomFichier, List<Generateur> generateurs, List<Maison> maisons, Map<Generateur, List<Maison>> connexions) {
+    public static void sauvegarder(String nomFichier,Reseaux reseau) {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomFichier))) {
             // ecrire les generateurs sous format : generateur(nom,capacite).
-            for (Generateur g : generateurs) {
+            for (Generateur g : reseau.getG()) {
                 writer.write("generateur(" + g.getnom() + "," + (int)g.getcap() + ").");
                 writer.newLine();
             }
 
             // maisons sous format : maison(nom, TYPE).
-            for (Maison m : maisons) {
+            for (Maison m : reseau.getM()) {
                 String type = convertirPuissanceEnType(m.getcons());
                 writer.write("maison(" + m.getnom() + ", " + type + ").");
                 writer.newLine();
@@ -36,7 +38,7 @@ public class SauvegardeReseau {
 
             // connexion(nomGen, nomMaison).
             // On parcourt la Map pour trouver qui est connecté à qui
-            for (Map.Entry<Generateur, List<Maison>> entry : connexions.entrySet()) {
+            for (Map.Entry<Generateur, List<Maison>> entry : reseau.getConnexions().entrySet()) {
                 Generateur gen = entry.getKey();
                 List<Maison> listeMaisons = entry.getValue();
 

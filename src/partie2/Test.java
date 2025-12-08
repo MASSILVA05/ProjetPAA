@@ -4,10 +4,7 @@ import partie2.FichierLoader;
 import partie2.Automatisation;
 import java.util.*;
 
-
-
-import partie2.FichierLoader;
-import partie2.Automatisation;
+import partie2.SauvegardeReseau;
 
 import java.util.*;
 
@@ -129,6 +126,7 @@ public class Test {
             System.out.println("3) Afficher le réseau");
             System.out.println("4) Supprimer une connexion");
             System.out.println("5) Lancer l'automatisation");
+            System.out.println("7) Sauvegarder le reseau dans un fichier");
             System.out.println("6) Quitter le menu réseau");
             System.out.print("Choix : ");
 
@@ -142,6 +140,7 @@ public class Test {
                 case 3 -> reseau.afficherReseau();
                 case 4 -> reseau.supprimerConnexion();
                 case 5 -> lancerAutomatisation();
+                case 7 -> SauvegardeReseau.sauvegarder("Reseaux", reseau);
                 case 6 -> quitterMenu = true;
                 default -> System.out.println("Option invalide !");
             }
