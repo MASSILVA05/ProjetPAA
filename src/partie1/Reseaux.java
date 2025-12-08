@@ -29,7 +29,7 @@ public class Reseaux {
      * Scanner utilisé pour la saisie utilisateur.
      */
 
-	private static Scanner sc=new Scanner(System.in);
+	public static Scanner sc=new Scanner(System.in);
 	/**
      * Liste des maisons présentes dans le réseau.
      */
@@ -58,6 +58,14 @@ public class Reseaux {
 		this.M=M;
 		this.G=G;
 		this.connexion=connexion;
+	}
+	/**
+	 * Constructeur par défaut qui initialise un réseau vide.
+	 */
+	public Reseaux() {
+	    this.M = new ArrayList<>();
+	    this.G = new ArrayList<>();
+	    this.connexion = new HashMap<>();
 	}
 	/**
      * Ajoute un générateur au réseau.
@@ -552,6 +560,11 @@ public class Reseaux {
 	    lambda = l;
 	}
 }
+
+
+
+
+
 
 
 
