@@ -1,69 +1,79 @@
 package partie2;
-import  partie1.Generateur;
-import  partie1.Maison;
+
+import partie1.Generateur;
+import partie1.Maison;
+import partie1.Reseaux;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Classe utilitaire pour sauvegarder un réseau électrique dans un fichier texte.
+ * 
+ * Le format de sauvegarde respecte la syntaxe définie :
+ * - Générateurs : generateur nom capacite.
+ * - Maisons : maison nom type.
+ * - Connexions : connexion maison generateur.
+ * 
+ * @author Massilva Djennadi
+ * @author Ines Meslem
+ * @author Lizaveta Dzemchankova
+ */
 public class SauvegardeReseau {
 
     /**
      * Sauvegarde l'état actuel du réseau dans un fichier texte.
-     * Respecte le format strict : Générateurs -> Maisons -> Connexions.
-     *
-     * @param nomFichier  Le chemin ou nom du fichier.
-     * @param generateurs La liste complète des générateurs (G).
-     * @param maisons     La liste complète des maisons (M).
-     * @param connexions  La map des connexions (Generateur -> Liste de Maisons).
+     * 
+     * Format de sortie (respect strict du format Section I) :
+     * - Générateurs : generateur(nom,capacite).
+     * - Maisons : maison(nom,type).
+     * - Connexions : connexion(maison,generateur).
+     * 
+     * L'ordre est important : d'abord les générateurs, puis les maisons, puis les connexions.
+     * 
+     * @param reseau le réseau à sauvegarder (contient générateurs, maisons et connexions)
+     * @param nomFichier le chemin ou nom du fichier de sortie
+     * @throws IOException si une erreur d'écriture se produit
      */
-    public static void sauvegarder(String nomFichier, List<Generateur> generateurs, List<Maison> maisons, Map<Generateur, List<Maison>> connexions) {
+    public static void sauvegarder(Reseaux reseau, String nomFichier) throws IOException {
+        if (nomFichier == null || nomFichier.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom du fichier ne peut pas etre vide !");
+        }
+
+        List<Generateur> generateurs = reseau.getG();
+        List<Maison> maisons = reseau.getM();
+        Map<Generateur, List<Maison>> connexions = reseau.getConnexions();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomFichier))) {
-            // ecrire les generateurs sous format : generateur(nom,capacite).
+            
+            // === Écrire les générateurs ===
+            // Format : generateur(nom,capacite).
             for (Generateur g : generateurs) {
                 writer.write("generateur(" + g.getnom() + "," + (int)g.getcap() + ").");
                 writer.newLine();
             }
 
-            // maisons sous format : maison(nom, TYPE).
+            // === Écrire les maisons ===
+            // Format : maison(nom,type).
             for (Maison m : maisons) {
-                String type = convertirPuissanceEnType(m.getcons());
-                writer.write("maison(" + m.getnom() + ", " + type + ").");
+                String type = m.getcons_type();
+                writer.write("maison(" + m.getnom() + "," + type + ").");
                 writer.newLine();
             }
 
-            // connexion(nomGen, nomMaison).
-            // On parcourt la Map pour trouver qui est connecté à qui
+            // === Écrire les connexions ===
+            // Format : connexion(maison,generateur).
             for (Map.Entry<Generateur, List<Maison>> entry : connexions.entrySet()) {
                 Generateur gen = entry.getKey();
                 List<Maison> listeMaisons = entry.getValue();
-
                 for (Maison m : listeMaisons) {
-                    writer.write("connexion(" + gen.getnom() + ", " + m.getnom() + ").");
+                    writer.write("connexion(" + m.getnom() + "," + gen.getnom() + ").");
                     writer.newLine();
                 }
             }
 
-            System.out.println("Sauvegarde réussie dans le fichier : " + nomFichier);
-
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la sauvegarde : " + e.getMessage());
-        }
-    }
-
-    /**
-     * Convertit la puissance (double/int) en Type (String) pour le fichier.
-     * 10 -> BASSE, 20 -> NORMAL, 40 -> FORTE
-     */
-    private static String convertirPuissanceEnType(double puissance) {
-        int p = (int) puissance;
-        switch (p) {
-            case 10: return "BASSE";
-            case 20: return "NORMAL";
-            case 40: return "FORTE";
-            default: return "NORMAL";
         }
     }
 }

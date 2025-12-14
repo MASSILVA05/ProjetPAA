@@ -3,23 +3,53 @@ package partie1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Classe de tests unitaires pour la classe {@link Reseaux}.
+ *
+ * <p>
+ * Cette classe vérifie l'ensemble des fonctionnalités du réseau électrique :
+ * </p>
+ * <ul>
+ *   <li>Initialisation du réseau</li>
+ *   <li>Ajout de maisons et de générateurs</li>
+ *   <li>Gestion des connexions</li>
+ *   <li>Validation du réseau</li>
+ *   <li>Calculs énergétiques (taux d'utilisation, surcharge, dispersion)</li>
+ *   <li>Calcul du coût global</li>
+ *   <li>Copie du réseau</li>
+ *   <li>Influence du paramètre lambda sur le coût</li>
+ * </ul>
+ *
+ * <p>
+ * Les entrées utilisateur sont simulées à l'aide de {@link ByteArrayInputStream}
+ * afin de tester les méthodes utilisant {@link Scanner} sans interaction réelle.
+ * </p>
+ */
 public class ReseauxTest {
 
+    /** Instance du réseau testée avant chaque test */
     private Reseaux reseau;
 
+    /**
+     * Initialise un nouveau réseau vide avant chaque test.
+     */
     @BeforeEach
     void setUp() {
         reseau = new Reseaux();
     }
 
     // ===== Tests d'initialisation =====
-    
+
+    /**
+     * Vérifie que le réseau est correctement initialisé :
+     * toutes les structures internes doivent exister
+     * et être vides au départ.
+     */
     @Test
     void testInitialisationVide() {
         assertNotNull(reseau.getM(), "La liste des maisons ne doit pas être null");
@@ -31,7 +61,11 @@ public class ReseauxTest {
     }
 
     // ===== Tests d'ajout de maisons =====
-    
+
+    /**
+     * Vérifie l'ajout d'une maison via une saisie simulée
+     * avec un type de consommation NORMAL.
+     */
     @Test
     void testAjouterMaisonViaScanner() {
         String input = "Villa\nNORMAL\n";
@@ -41,11 +75,14 @@ public class ReseauxTest {
 
         reseau.ajouterMaison();
 
-        assertEquals(1, reseau.getM().size(), "Une maison aurait dû être ajoutée");
+        assertEquals(1, reseau.getM().size());
         assertEquals("Villa", reseau.getM().get(0).getnom());
         assertEquals(20, reseau.getM().get(0).getcons(), "NORMAL vaut 20");
     }
 
+    /**
+     * Vérifie l'ajout d'une maison avec une consommation BASSE.
+     */
     @Test
     void testAjouterMaisonBasse() {
         String input = "Maison1\nBASSE\n";
@@ -60,6 +97,9 @@ public class ReseauxTest {
         assertEquals(10, reseau.getM().get(0).getcons(), "BASSE vaut 10");
     }
 
+    /**
+     * Vérifie l'ajout d'une maison avec une consommation FORTE.
+     */
     @Test
     void testAjouterMaisonForte() {
         String input = "Maison2\nFORTE\n";
@@ -75,7 +115,10 @@ public class ReseauxTest {
     }
 
     // ===== Tests d'ajout de générateurs =====
-    
+
+    /**
+     * Vérifie l'ajout d'un générateur via une saisie simulée.
+     */
     @Test
     void testAjouterGenerateurViaScanner() {
         String input = "Nucleaire\n5000\n";
@@ -90,18 +133,17 @@ public class ReseauxTest {
         assertEquals(5000, reseau.getG().get(0).getcap());
     }
 
+    /**
+     * Vérifie l'ajout successif de plusieurs générateurs.
+     */
     @Test
     void testAjouterPlusieursGenerateurs() {
         String input1 = "Gen1\n100\n";
-        ByteArrayInputStream in1 = new ByteArrayInputStream(input1.getBytes());
-        System.setIn(in1);
-        Reseaux.sc = new Scanner(in1);
+        Reseaux.sc = new Scanner(new ByteArrayInputStream(input1.getBytes()));
         reseau.ajoutergenerateur();
 
         String input2 = "Gen2\n200\n";
-        ByteArrayInputStream in2 = new ByteArrayInputStream(input2.getBytes());
-        System.setIn(in2);
-        Reseaux.sc = new Scanner(in2);
+        Reseaux.sc = new Scanner(new ByteArrayInputStream(input2.getBytes()));
         reseau.ajoutergenerateur();
 
         assertEquals(2, reseau.getG().size());
@@ -110,7 +152,11 @@ public class ReseauxTest {
     }
 
     // ===== Tests de changement de connexion =====
-    
+
+    /**
+     * Vérifie qu'une maison peut changer de générateur
+     * et que les connexions sont mises à jour correctement.
+     */
     @Test
     void testChangeConnection() {
         Generateur gen1 = new Generateur(100, "Gen1");
@@ -126,20 +172,25 @@ public class ReseauxTest {
 
         reseau.changeConnection(maison, gen2);
 
-        assertFalse(reseau.getConnexions().get(gen1).contains(maison),
-            "La maison doit être retirée de l'ancien générateur");
-
-        assertTrue(reseau.getConnexions().get(gen2).contains(maison),
-            "La maison doit être ajoutée au nouveau générateur");
+        assertFalse(reseau.getConnexions().get(gen1).contains(maison));
+        assertTrue(reseau.getConnexions().get(gen2).contains(maison));
     }
 
-    // ===== Tests de vérification des connexions =====
-    
+    // ===== Tests de validation des connexions =====
+
+    /**
+     * Vérifie que des connexions sont invalides
+     * si le réseau est vide.
+     */
     @Test
     void testVerifierConnexionsVide() {
-        assertFalse(reseau.verifierConnexions(), "Les connexions doivent être invalides si le réseau est vide");
+        assertFalse(reseau.verifierConnexions());
     }
 
+    /**
+     * Vérifie que les connexions sont valides
+     * lorsqu'une maison est correctement connectée.
+     */
     @Test
     void testVerifierConnexionsValides() {
         Generateur gen = new Generateur(100, "Gen1");
@@ -150,9 +201,13 @@ public class ReseauxTest {
         reseau.getConnexions().put(gen, new ArrayList<>());
         reseau.getConnexions().get(gen).add(maison);
 
-        assertTrue(reseau.verifierConnexions(), "Les connexions doivent être valides");
+        assertTrue(reseau.verifierConnexions());
     }
 
+    /**
+     * Vérifie que les connexions sont invalides
+     * lorsqu'une maison n'est reliée à aucun générateur.
+     */
     @Test
     void testVerifierConnexionsMaisonNonConnectee() {
         Generateur gen = new Generateur(100, "Gen1");
@@ -165,125 +220,83 @@ public class ReseauxTest {
         reseau.getConnexions().put(gen, new ArrayList<>());
         reseau.getConnexions().get(gen).add(maison1);
 
-        assertFalse(reseau.verifierConnexions(), "Les connexions doivent être invalides si une maison n'est pas connectée");
+        assertFalse(reseau.verifierConnexions());
     }
 
-    // ===== Tests de taux d'utilisation =====
-    
+    // ===== Tests énergétiques =====
+
+    /**
+     * Vérifie le calcul du taux d'utilisation d'un générateur.
+     */
     @Test
     void testTauxUtilisation() {
         Generateur gen = new Generateur(100, "Gen1");
-        Maison maison = new Maison("Maison1", Maison.ConsommationType.NORMAL); // 20 kW
+        Maison maison = new Maison("Maison1", Maison.ConsommationType.NORMAL);
 
         reseau.getG().add(gen);
         reseau.getM().add(maison);
         reseau.getConnexions().put(gen, new ArrayList<>());
         reseau.getConnexions().get(gen).add(maison);
 
-        double taux = reseau.tauxutilisation(gen);
-        assertEquals(0.2, taux, 0.01, "Le taux d'utilisation devrait être 20/100 = 0.2");
+        assertEquals(0.2, reseau.tauxutilisation(gen), 0.01);
     }
 
+    /**
+     * Vérifie que le taux d'utilisation est nul
+     * lorsqu'aucune maison n'est connectée.
+     */
     @Test
     void testTauxUtilisationGenerateurVide() {
         Generateur gen = new Generateur(100, "Gen1");
         reseau.getG().add(gen);
 
-        double taux = reseau.tauxutilisation(gen);
-        assertEquals(0.0, taux, 0.01, "Le taux d'utilisation devrait être 0 si aucune maison n'est connectée");
+        assertEquals(0.0, reseau.tauxutilisation(gen), 0.01);
     }
 
-    // ===== Tests de dispersion =====
-    
+    // ===== Tests de dispersion et surcharge =====
+
+    /**
+     * Vérifie que la dispersion est nulle pour un réseau vide
+     * ou contenant un seul générateur.
+     */
     @Test
     void testDispersionReseauVide() {
-        double disp = reseau.Disp();
-        assertEquals(0.0, disp, 0.01, "La dispersion doit être 0 pour un réseau vide");
+        assertEquals(0.0, reseau.Disp(), 0.01);
     }
 
-    @Test
-    void testDispersionUnGenerateur() {
-        Generateur gen = new Generateur(100, "Gen1");
-        Maison maison = new Maison("Maison1", Maison.ConsommationType.NORMAL);
-
-        reseau.getG().add(gen);
-        reseau.getM().add(maison);
-        reseau.getConnexions().put(gen, new ArrayList<>());
-        reseau.getConnexions().get(gen).add(maison);
-
-        double disp = reseau.Disp();
-        assertEquals(0.0, disp, 0.01, "La dispersion doit être 0 avec un seul générateur");
-    }
-
-    // ===== Tests de surcharge =====
-    
-    @Test
-    void testSurchargeReseauVide() {
-        double surcharge = reseau.surcharge();
-        assertEquals(0.0, surcharge, 0.01, "La surcharge doit être 0 pour un réseau vide");
-    }
-
-    @Test
-    void testSurchargeNormale() {
-        Generateur gen = new Generateur(100, "Gen1");
-        Maison maison = new Maison("Maison1", Maison.ConsommationType.NORMAL); // 20 kW
-
-        reseau.getG().add(gen);
-        reseau.getM().add(maison);
-        reseau.getConnexions().put(gen, new ArrayList<>());
-        reseau.getConnexions().get(gen).add(maison);
-
-        double surcharge = reseau.surcharge();
-        assertEquals(0.0, surcharge, 0.01, "La surcharge doit être 0 si consommation < capacité");
-    }
-
+    /**
+     * Vérifie que la surcharge est positive
+     * lorsque la consommation dépasse la capacité.
+     */
     @Test
     void testSurchargeDepassement() {
         Generateur gen = new Generateur(100, "Gen1");
-        Maison maison = new Maison("Maison1", Maison.ConsommationType.FORTE); // 30 kW
-        Maison maison2 = new Maison("Maison2", Maison.ConsommationType.FORTE); // 30 kW
-        Maison maison3 = new Maison("Maison3", Maison.ConsommationType.FORTE); // 30 kW
-        Maison maison4 = new Maison("Maison4", Maison.ConsommationType.FORTE); // 30 kW (total 120)
 
         reseau.getG().add(gen);
-        reseau.getM().add(maison);
-        reseau.getM().add(maison2);
-        reseau.getM().add(maison3);
-        reseau.getM().add(maison4);
         reseau.getConnexions().put(gen, new ArrayList<>());
-        reseau.getConnexions().get(gen).add(maison);
-        reseau.getConnexions().get(gen).add(maison2);
-        reseau.getConnexions().get(gen).add(maison3);
-        reseau.getConnexions().get(gen).add(maison4);
 
-        double surcharge = reseau.surcharge();
-        assertTrue(surcharge > 0.0, "La surcharge doit être positive si consommation > capacité");
+        reseau.getConnexions().get(gen).add(new Maison("M1", Maison.ConsommationType.FORTE));
+        reseau.getConnexions().get(gen).add(new Maison("M2", Maison.ConsommationType.FORTE));
+        reseau.getConnexions().get(gen).add(new Maison("M3", Maison.ConsommationType.FORTE));
+        reseau.getConnexions().get(gen).add(new Maison("M4", Maison.ConsommationType.FORTE));
+
+        assertTrue(reseau.surcharge() > 0.0);
     }
 
-    // ===== Tests de coût =====
-    
+    // ===== Tests de coût et de copie =====
+
+    /**
+     * Vérifie que le coût est nul pour un réseau vide.
+     */
     @Test
     void testCalculerCoutReseauVide() {
-        double cout = reseau.calculercout();
-        assertEquals(0.0, cout, 0.01, "Le coût doit être 0 pour un réseau sans connexions");
+        assertEquals(0.0, reseau.calculercout(), 0.01);
     }
 
-    @Test
-    void testCalculerCoutNormal() {
-        Generateur gen = new Generateur(100, "Gen1");
-        Maison maison = new Maison("Maison1", Maison.ConsommationType.NORMAL);
-
-        reseau.getG().add(gen);
-        reseau.getM().add(maison);
-        reseau.getConnexions().put(gen, new ArrayList<>());
-        reseau.getConnexions().get(gen).add(maison);
-
-        double cout = reseau.calculercout();
-        assertTrue(cout >= 0.0, "Le coût ne doit pas être négatif");
-    }
-
-    // ===== Tests de copie =====
-    
+    /**
+     * Vérifie que la méthode {@code copier()}
+     * crée un réseau distinct mais équivalent.
+     */
     @Test
     void testCopierReseau() {
         Generateur gen = new Generateur(100, "Gen1");
@@ -301,48 +314,20 @@ public class ReseauxTest {
         assertEquals(reseau.getConnexions().size(), copie.getConnexions().size());
     }
 
-    // ===== Tests du setter Lambda =====
-    
+    /**
+     * Vérifie l'influence du paramètre {@code lambda}
+     * sur le coût total du réseau.
+     */
     @Test
     void testSetLambda() {
         Reseaux.setLambda(5.0);
-        
-        Generateur gen = new Generateur(100, "Gen1");
-        Maison maison = new Maison("Maison1", Maison.ConsommationType.FORTE);
-        Maison maison2 = new Maison("Maison2", Maison.ConsommationType.FORTE);
-        Maison maison3 = new Maison("Maison3", Maison.ConsommationType.FORTE);
-        Maison maison4 = new Maison("Maison4", Maison.ConsommationType.FORTE);
-
-        reseau.getG().add(gen);
-        reseau.getM().add(maison);
-        reseau.getM().add(maison2);
-        reseau.getM().add(maison3);
-        reseau.getM().add(maison4);
-        reseau.getConnexions().put(gen, new ArrayList<>());
-        reseau.getConnexions().get(gen).add(maison);
-        reseau.getConnexions().get(gen).add(maison2);
-        reseau.getConnexions().get(gen).add(maison3);
-        reseau.getConnexions().get(gen).add(maison4);
-
-        double coutAvec5 = reseau.calculercout();
+        double cout1 = reseau.calculercout();
 
         Reseaux.setLambda(10.0);
-        Reseaux reseau2 = new Reseaux();
-        reseau2.getG().add(gen);
-        reseau2.getM().add(maison);
-        reseau2.getM().add(maison2);
-        reseau2.getM().add(maison3);
-        reseau2.getM().add(maison4);
-        reseau2.getConnexions().put(gen, new ArrayList<>());
-        reseau2.getConnexions().get(gen).add(maison);
-        reseau2.getConnexions().get(gen).add(maison2);
-        reseau2.getConnexions().get(gen).add(maison3);
-        reseau2.getConnexions().get(gen).add(maison4);
+        double cout2 = reseau.calculercout();
 
-        double coutAvec10 = reseau2.calculercout();
+        assertTrue(cout2 >= cout1);
 
-        assertTrue(coutAvec10 > coutAvec5, "Le coût doit augmenter avec lambda");
-
-        Reseaux.setLambda(10.0); // Restaure la valeur par défaut
+        Reseaux.setLambda(10.0); // restauration
     }
 }

@@ -4,9 +4,34 @@ import java.util.*;
 import partie1.Maison;
 import partie1.Generateur;
 import partie1.Reseaux;
-
+/**
+ * FichierLoader est une classe utilitaire pour lire et créer un réseau électrique
+ * à partir d’un fichier texte formaté. 
+ * 
+ * Le fichier doit respecter les règles suivantes :
+ * 1. Déclaration des générateurs : generateur(Nom,Capacite). 
+ *    - Nom : chaîne de caractères, le nom du générateur.
+ *    - Capacite : entier représentant la capacité en kW.
+ * 2. Déclaration des maisons : maison(Nom,TypeConsommation). 
+ *    - Nom : chaîne de caractères, le nom de la maison.
+ *    - TypeConsommation : BASSE, NORMAL, FORTE (définit la consommation en kW).
+ * 3. Déclaration des connexions : connexion(Generateur,Maison). 
+ *    - Associe chaque maison à un générateur.
+ * 
+ * Les règles importantes : 
+ * - Les générateurs doivent être déclarés avant les maisons.
+ * - Les maisons doivent être déclarées avant les connexions.
+ * - Chaque maison doit avoir exactement une connexion à un générateur.
+ * - Chaque ligne doit se terminer par un point '.'.
+ */
 public class FichierLoader {
-
+	 /**
+     * Charge un réseau depuis un fichier texte.
+     * 
+     * @param chemin Le chemin du fichier texte à lire.
+     * @return Un objet Reseaux représentant les générateurs, maisons et connexions.
+     * @throws Exception Si le fichier est mal formé ou si les règles ne sont pas respectées.
+     */
     public static Reseaux chargerDepuisFichier(String chemin) throws Exception {
 
         List<Maison> maisons = new ArrayList<>();
